@@ -1,7 +1,6 @@
 package mappers;
 
 import java.io.IOException;
-import java.util.StringTokenizer;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -17,7 +16,6 @@ public class Job1Mapper1
 			             ) throws IOException, InterruptedException {
 			
 				
-//				System.out.println("mapper1: " + value.toString());
 			
 				/**
 				 * photo-id \t owner \t tags \t date-taken \t place-id \t accuracy

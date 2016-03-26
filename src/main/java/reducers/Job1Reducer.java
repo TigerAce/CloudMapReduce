@@ -46,7 +46,7 @@ public class Job1Reducer
 		
 		temp = Integer.toString(photoCount) + "/" + temp;
 		
-		if(photoCount != 0) System.out.println(temp);
+		//if(photoCount != 0) System.out.println(temp);
 		
 		numAndTags.set(temp);
 		context.write(city, numAndTags);

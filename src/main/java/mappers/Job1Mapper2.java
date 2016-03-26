@@ -11,13 +11,13 @@ import org.apache.hadoop.mapreduce.Mapper;
 public class Job1Mapper2
 			extends Mapper<Object, Text, Text, Text>{
 			
-			private final static IntWritable one = new IntWritable(1);
+	
 			private Text place_id = new Text();
 			private Text locality = new Text();
 			public void map(Object key, Text value, Context context
 			             ) throws IOException, InterruptedException {
 			
-				//System.out.println("mapper2: " + value.toString());
+			
 			
 				/**
 				 * place-id \t woeid \t latitude \t longitude \t place-name \t place-type-id \t place-url
@@ -50,9 +50,6 @@ public class Job1Mapper2
 					
 				}
 					
-//				place_id.set(split[4]);
-//				tags.set(split[2]);
-//				context.write(place_id, tags);
 
 			}
 }
