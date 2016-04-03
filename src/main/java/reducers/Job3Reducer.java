@@ -82,7 +82,8 @@ public class Job3Reducer
 		 * 5.out put the 50 record
 		 */
 		
-		
+		//as all data has the same key, so the reduce function will only be called once, maybe there is no need to clear the set.
+		recordSet.clear();
 		
 		
 		for(Text value: values){
