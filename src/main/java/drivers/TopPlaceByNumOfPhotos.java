@@ -23,8 +23,8 @@ import reducers.*;
 
 public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 
-	private static final String INTERMEDIATE_OUTPUT1 = "/Users/chen/Desktop/intermediate1";
-	private static final String INTERMEDIATE_OUTPUT2 = "/Users/chen/Desktop/intermediate2";
+	private static final String INTERMEDIATE_OUTPUT1 = "./intermediate1";
+	private static final String INTERMEDIATE_OUTPUT2 = "./intermediate2";
 	
 	public static void main(String[] args) throws Exception {
 			     int res = ToolRunner.run(new Configuration(), new TopPlaceByNumOfPhotos(), args);
