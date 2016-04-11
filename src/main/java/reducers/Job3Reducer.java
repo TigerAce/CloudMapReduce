@@ -17,7 +17,8 @@ public class Job3Reducer
 		extends Reducer<Text,Text,Text,Text> {
 	
 	private TreeSet<DataPair> recordSet = new TreeSet<DataPair>();
-	
+	private Hashtable<String, Integer> ht = new Hashtable<String, Integer>();
+	private TreeSet<String> ts = new TreeSet<String>();
 	private Text k = new Text();
 	private Text v = new Text();
 	
@@ -102,11 +103,11 @@ public class Job3Reducer
 			
 			//if photo number != 0 -> process tags
 			if(totalNumberOfPhotos != 0){
-					String tagInfo = splitNumPhotos[1];
+					String PlaceIdInfo = splitNumPhotos[1];
 					//handle possible extra split
 					if(splitNumPhotos.length > 2){		
 						for(int i = 2; i < splitNumPhotos.length; i++){
-							tagInfo += splitNumPhotos[i];
+							PlaceIdInfo += splitNumPhotos[i];
 						}
 					}
 					
@@ -115,7 +116,7 @@ public class Job3Reducer
 					 * and insert into tree set for sorting process
 					 */
 					//form value string
-					String allInfo = locality + "\t" + totalNumberOfPhotos + "\t" + tagInfo;
+					String allInfo = locality + "\t" + totalNumberOfPhotos + "\t" + PlaceIdInfo;
 					recordSet.add(new DataPair(totalNumberOfPhotos, allInfo));
 					
 					//push out the first record if the map size greater than 50
@@ -144,22 +145,30 @@ public class Job3Reducer
 			
 			String locality = splitData[0];
 			String photoCount = splitData[1];
-			String tagInfo = splitData[2];
+			String placeIdInfo = splitData[2];
 			
-			/**
-			 * aggregate and count frequency of tags
-			 * 
-			 */
-			String[] splitTags = tagInfo.split(" ");
-			int totalTagCount = Integer.parseInt(splitTags[0]);
-	
-			Hashtable<String,Integer> ht = aggregateTags(splitTags);
-
-			String resultTagInfo = countTagFrequency(totalTagCount,ht);
-		
-			k.set(locality);
-			v.set(photoCount + "\t" + resultTagInfo);
-			context.write(k, v);
+			
+			String[] splitPlaceId = placeIdInfo.split(" ");
+			for(String s : splitPlaceId){
+				if(!s.equals(""))
+				context.write(new Text(s), new Text(photoCount + " " + locality));
+			}
+		//	tagInfo = tagCounter(tagInfo);
+			
+//			/**
+//			 * aggregate and count frequency of tags
+//			 * 
+//			 */
+//			String[] splitTags = tagInfo.split(" ");
+//			int totalTagCount = Integer.parseInt(splitTags[0]);
+//	
+//			Hashtable<String,Integer> ht = aggregateTags(splitTags);
+//
+//			String resultTagInfo = countTagFrequency(totalTagCount,ht);
+//		
+//			k.set(locality);
+//			v.set(photoCount + "\t" + resultTagInfo);
+//			context.write(k, v);
 					
 		}
 
@@ -174,6 +183,7 @@ public class Job3Reducer
 		for(int i = 1; i < splitTags.length; i++){
 			
 			String currTag = splitTags[i];
+			
 			
 			String[] splitCurrTag = currTag.split("#");
 			
@@ -233,5 +243,51 @@ public class Job3Reducer
 			}
 		}
 		return resultTags;
+	}
+	
+	
+	
+	
+	
+	private String tagCounter(String tags){
+		/**
+		 *
+		 * input: {tag1 tag2 tag3 tag1 tag4 tag2 tag2}
+		 * output:{7(total number of tags) 2#tag1 3#tag2 1#tag3 1#tag4}
+		 */
+		if(tags.equals("")) return tags;
+		
+		ht.clear();
+		
+		String[] allTags = tags.split(" ");
+		
+	
+		
+		int totalNumberOfTags = allTags.length;
+		
+
+		for(int i = 0; i < totalNumberOfTags; i++){
+			String currTag = allTags[i];
+			if(ht.containsKey(currTag)){
+				ht.put(currTag, ht.get(currTag) + 1);
+			}else{
+				ht.put(currTag, 1);
+			}
+		}
+		
+		String formTags = Integer.toString(totalNumberOfTags);
+		
+		//sort tags???
+		//TreeSet<String> ts = new TreeSet(ht.keySet());
+		ts.clear();
+		ts.addAll(ht.keySet());
+		
+		//ts or ht.keySet
+		for(String tag : ts){
+			formTags = formTags + " "  + Integer.toString(ht.get(tag)) + "#" + tag;
+		}
+
+
+		return formTags;
 	}
 }
