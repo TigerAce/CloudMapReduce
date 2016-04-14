@@ -46,6 +46,7 @@ public class Job1Reducer
 		if(photoCount!= 0){
 			pc.set(Integer.toString(photoCount) + "/" + key.toString());
 			context.write(city, pc);
+		
 		}
 	
 		}

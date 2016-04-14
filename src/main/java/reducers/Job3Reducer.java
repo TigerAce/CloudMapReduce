@@ -136,10 +136,12 @@ public class Job3Reducer
 		 */
 
 	
+		int i = 0;
 		for(Iterator<DataPair> iter = recordSet.descendingIterator(); iter.hasNext();){
 		
 			
 			DataPair currPair = iter.next();
+			i++;
 			String data = currPair.value;
 			String[] splitData = data.split("\t");
 			
@@ -147,11 +149,12 @@ public class Job3Reducer
 			String photoCount = splitData[1];
 			String placeIdInfo = splitData[2];
 			
-			
+//			context.write(new Text(locality), new Text(Integer.toString(i) + "/" + photoCount + "/" + placeIdInfo));
 			String[] splitPlaceId = placeIdInfo.split(" ");
 			for(String s : splitPlaceId){
 				if(!s.equals(""))
-				context.write(new Text(s), new Text(photoCount + " " + locality));
+				context.write(new Text(s), new Text(locality + "/" + Integer.toString(i) + "/" +  photoCount));
+			
 			}
 		//	tagInfo = tagCounter(tagInfo);
 			

@@ -41,6 +41,7 @@ public class Job2Reducer
 		
 	//	for(String id : placeIDRecord){
 			context.write(key, new Text(Integer.toString(totalNumberOfPhotos) + "/" + placeIds));
+			
 	//	}
 //		value.set(Integer.toString(totalNumberOfPhotos) + "/" + Integer.toString(totalNumberOfTags) + " " + totalTags);
 //		context.write(key, value);

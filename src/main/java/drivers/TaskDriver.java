@@ -19,15 +19,19 @@ import reducers.*;
 
 
 
-public class TopPlaceByNumOfPhotos extends Configured implements Tool{
+public class TaskDriver extends Configured implements Tool{
 
 	private static final String INTERMEDIATE_OUTPUT1 = "./intermediate1";
 	private static final String INTERMEDIATE_OUTPUT2 = "./intermediate2";
 	private static final String INTERMEDIATE_OUTPUT3 = "./intermediate3";
 	private static final String INTERMEDIATE_OUTPUT4 = "./intermediate4";
 	
+	private static final int NUMBER_OF_NODES = 14;
+	private static final int REDUCE_TASKS_MAXIMUM = 2;
+	
+	
 	public static void main(String[] args) throws Exception {
-			     int res = ToolRunner.run(new Configuration(), new TopPlaceByNumOfPhotos(), args);
+			     int res = ToolRunner.run(new Configuration(), new TaskDriver(), args);
 			    
 			     System.exit(res);
 	}
@@ -42,8 +46,9 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 
 		Configuration conf1 = new Configuration();
 
+		conf1.set("place", args[1]);
 	 	Job job1 = Job.getInstance(conf1, "JOB1");
-	    job1.setJarByClass(TopPlaceByNumOfPhotos.class);
+	    job1.setJarByClass(TaskDriver.class);
 
 	    //set mapper
 	    //job1.setMapperClass(Job1Mapper1.class);
@@ -53,10 +58,8 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 
 	    //set reducer
 	    
-	    /**
-	     * set reducer number    a partitioner?
-	     */
-	    job1.setNumReduceTasks(5);
+	
+	    job1.setNumReduceTasks((int) (1.75 * NUMBER_OF_NODES * REDUCE_TASKS_MAXIMUM));
 	    job1.setReducerClass(Job1Reducer.class);
 
 	    //set output format
@@ -85,6 +88,16 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 	//   MultipleInputs.addInputPath(job1, new Path(args[0]), TextInputFormat.class, Job1Mapper1.class);
 	   MultipleInputs.addInputPath(job1, new Path(args[1]), TextInputFormat.class, Job1Mapper2.class);
 
+	   /**
+	     * clear out put path
+	     */
+	  
+	    /*Check if output path (args[1])exist or not*/
+	    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT1))){
+	       /*If exist delete the output path*/
+	       fs.delete(new Path(this.INTERMEDIATE_OUTPUT1),true);
+	    }
+	    
 	   FileOutputFormat.setOutputPath(job1, new Path(this.INTERMEDIATE_OUTPUT1));
 
 	 
@@ -95,7 +108,7 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 		Configuration conf2 = new Configuration();
 
 	 	Job job2 = Job.getInstance(conf2, "JOB2");
-	    job2.setJarByClass(TopPlaceByNumOfPhotos.class);
+	    job2.setJarByClass(TaskDriver.class);
 
 	    //set mapper
 	    
@@ -114,6 +127,15 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 	    //set input and output path
 	    FileInputFormat.addInputPath(job2, new Path(this.INTERMEDIATE_OUTPUT1 + "/part*"));
 	   
+	    /**
+	     * clear out put path
+	     */
+	    fs = FileSystem.get(conf2);
+	    /*Check if output path (args[1])exist or not*/
+	    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT2))){
+	       /*If exist delete the output path*/
+	       fs.delete(new Path(this.INTERMEDIATE_OUTPUT2),true);
+	    }
 	    FileOutputFormat.setOutputPath(job2, new Path(this.INTERMEDIATE_OUTPUT2));
 	    
 	    
@@ -125,7 +147,7 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 		Configuration conf3 = new Configuration();
 
 	 	Job job3 = Job.getInstance(conf3, "JOB3");
-	    job3.setJarByClass(TopPlaceByNumOfPhotos.class);
+	    job3.setJarByClass(TaskDriver.class);
 
 	    //set mapper
 	    
@@ -144,6 +166,15 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 	    //set input and output path
 	    FileInputFormat.addInputPath(job3, new Path(this.INTERMEDIATE_OUTPUT2 + "/part*"));
 	   
+	    /**
+	     * clear out put path
+	     */
+	    fs = FileSystem.get(conf3);
+	    /*Check if output path (args[1])exist or not*/
+	    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT3))){
+	       /*If exist delete the output path*/
+	       fs.delete(new Path(this.INTERMEDIATE_OUTPUT3),true);
+	    }
 	    FileOutputFormat.setOutputPath(job3, new Path(this.INTERMEDIATE_OUTPUT3));
 	
 	    
@@ -155,34 +186,44 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 		Configuration conf4 = new Configuration();
 
 	 	Job job4 = Job.getInstance(conf4, "JOB4");
-	    job4.setJarByClass(TopPlaceByNumOfPhotos.class);
+	    job4.setJarByClass(TaskDriver.class);
 
 	    //set mapper
 	    
-	  //  job4.setMapperClass(Job4Mapper1.class);
+	    job4.setMapperClass(Job4Mapper1.class);
 
 	    //set combiner
-	  //  job.setCombinerClass(RecordReducer.class);
-	    job4.setPartitionerClass(NaturalKeyPartitioner.class);
-	    job4.setGroupingComparatorClass(GroupComprator.class);
-	    job4.setSortComparatorClass(KeyComprator.class);
+	   job4.setCombinerClass(Job4Reducer.class);
+	  //  job4.setNumReduceTasks(2);
+//	    if(fs.exists(p)){ 
+//	    	fs.delete(p, true); 
+
+//	    	}
 	    
+	   job4.setNumReduceTasks((int) (1.75 * NUMBER_OF_NODES * REDUCE_TASKS_MAXIMUM));
+	    
+//	    job4.setPartitionerClass(NaturalKeyPartitioner.class);
+//	    job4.setGroupingComparatorClass(GroupComprator.class);
+//	    job4.setSortComparatorClass(KeyComprator.class);
+	    
+	   
 	    //set reducer
+	    
 	    job4.setReducerClass(Job4Reducer.class);
-	
+	    
 	    
 	    //set output format
 	    job4.setOutputKeyClass(Text.class);
-	    job4.setOutputValueClass(Text.class);
+	    job4.setOutputValueClass(IntWritable.class);
 	    
 	
-		  if(status_list != null){
-		      for(FileStatus status : status_list){
-		          
-		    	  MultipleInputs.addInputPath(job4, new Path(status.getPath().toString()), TextInputFormat.class, Job4Mapper2.class);
-		      }
-		  }
-		  
+//		  if(status_list != null){
+//		      for(FileStatus status : status_list){
+//		          
+//		    	  MultipleInputs.addInputPath(job4, new Path(status.getPath().toString()), TextInputFormat.class, Job4Mapper1.class);
+//		      }
+//		  }
+//		  
 		  
 //		  FileSystem fs4= FileSystem.get(conf4); 
 //		   //get the FileStatus list from given dir
@@ -195,11 +236,22 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 		  
 		    //set input and output path
 		  //  FileInputFormat.addInputPath((JobConf)job.getConfiguration(), new Path(args[0]));
-		   MultipleInputs.addInputPath(job4, new Path(this.INTERMEDIATE_OUTPUT3 + "/part-r-00000"), TextInputFormat.class, Job4Mapper1.class);
+	//	   MultipleInputs.addInputPath(job4, new Path(this.INTERMEDIATE_OUTPUT3 + "/part-r-00000"), TextInputFormat.class, Job4Mapper1.class);
 		 //  MultipleInputs.addInputPath(job1, new Path(args[1]), TextInputFormat.class, Job1Mapper2.class);
 	    //set input and output path
-	   // FileInputFormat.addInputPath(job4, new Path(this.INTERMEDIATE_OUTPUT3 + "/part*"));
+	
+		  FileInputFormat.addInputPath(job4, new Path(args[0] + "*"));
 	   
+		  
+		  /**
+		     * clear out put path
+		     */
+		    fs = FileSystem.get(conf4);
+		    /*Check if output path (args[1])exist or not*/
+		    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT4))){
+		       /*If exist delete the output path*/
+		       fs.delete(new Path(this.INTERMEDIATE_OUTPUT4),true);
+		    }
 	    FileOutputFormat.setOutputPath(job4, new Path(this.INTERMEDIATE_OUTPUT4));
 	    
 	    
@@ -214,19 +266,22 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 		Configuration conf5 = new Configuration();
 
 	 	Job job5 = Job.getInstance(conf5, "JOB5");
-	    job5.setJarByClass(TopPlaceByNumOfPhotos.class);
+	    job5.setJarByClass(TaskDriver.class);
 
 	    //set mapper
 	    
+	   
 	    job5.setMapperClass(Job5Mapper1.class);
 
 	    //set combiner
 	  //  job.setCombinerClass(RecordReducer.class);
 
+//	    job5.setNumReduceTasks((int) (1.75 * NUMBER_OF_NODES * REDUCE_TASKS_MAXIMUM));
+	    
 	    //set reducer
 	    job5.setReducerClass(Job5Reducer.class);
 
-	    job5.setPartitionerClass(NaturalKeyPartitioner.class);
+//	    job5.setPartitionerClass(NaturalKeyPartitioner.class);
 	    job5.setGroupingComparatorClass(GroupComprator.class);
 	    job5.setSortComparatorClass(SortByPhotoNumber.class);
 	    
@@ -237,6 +292,15 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 	    //set input and output path
 	    FileInputFormat.addInputPath(job5, new Path(this.INTERMEDIATE_OUTPUT4 + "/part*"));
 	   
+	    /**
+	     * clear out put path
+	     */
+	    fs = FileSystem.get(conf5);
+	    /*Check if output path (args[1])exist or not*/
+	    if(fs.exists(new Path(args[2]))){
+	       /*If exist delete the output path*/
+	       fs.delete(new Path(args[2]),true);
+	    }
 	    FileOutputFormat.setOutputPath(job5, new Path(args[2]));
 	    
 	    
@@ -357,6 +421,7 @@ public class TopPlaceByNumOfPhotos extends Configured implements Tool{
 	    }
 	 
 	}
+
 	
 
 }

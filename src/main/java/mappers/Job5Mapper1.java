@@ -15,9 +15,17 @@ public class Job5Mapper1
 					throws IOException, InterruptedException {		
 
 				String[] split = value.toString().split("\t");
-				String[] splitPhtotCountAndTag = split[1].split("/");
-				k.set(split[0] + ":" + splitPhtotCountAndTag[0]);
+				String[] splitKey = split[0].split(" ");
+				String[] ks = splitKey[1].split("/");
+				String firstKey = ks[0];
+				String secondKey = ks[2];
 				
-				context.write(k, new Text(splitPhtotCountAndTag[1]));
+				String tag = splitKey[0] + "/" + split[1];
+				
+//				System.out.println(firstKey + ", " + secondKey + "->" + tag);
+//				String[] splitPhtotCountAndTag = split[1].split("/");
+//				k.set(split[0] + ":" + splitPhtotCountAndTag[0]);
+				
+				context.write(new Text(firstKey + ":" + secondKey), new Text(tag));
 			}
 }
