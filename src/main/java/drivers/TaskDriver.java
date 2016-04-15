@@ -51,10 +51,10 @@ public class TaskDriver extends Configured implements Tool{
 	    job1.setJarByClass(TaskDriver.class);
 
 	    //set mapper
-	    //job1.setMapperClass(Job1Mapper1.class);
+	    job1.setMapperClass(Job1Mapper1.class);
 
 	    //set combiner
-	  //  job.setCombinerClass(RecordReducer.class);
+	    job1.setCombinerClass(Job1Reducer.class);
 
 	    //set reducer
 	    
@@ -68,30 +68,31 @@ public class TaskDriver extends Configured implements Tool{
 
 	    
 	    
-	   FileSystem fs= FileSystem.get(conf1); 
+	   FileSystem fs; 
 
 	   //get the FileStatus list from given dir
-	  FileStatus[] status_list = fs.listStatus(new Path(args[0]));
-	  if(status_list != null){
-	      for(FileStatus status : status_list){
-	          //add each file to the list of inputs for the map-reduce job
-	    	//  System.out.println(status.getPath());
-	         // FileInputFormat.addInputPath(conf, status.getPath());
-	    	  MultipleInputs.addInputPath(job1, new Path(status.getPath().toString()), TextInputFormat.class, Job1Mapper1.class);
-	      }
-	  }
+//	  FileStatus[] status_list = fs.listStatus(new Path(args[0]));
+//	  if(status_list != null){
+//	      for(FileStatus status : status_list){
+//	          //add each file to the list of inputs for the map-reduce job
+//	    	//  System.out.println(status.getPath());
+//	         // FileInputFormat.addInputPath(conf, status.getPath());
+//	    	  MultipleInputs.addInputPath(job1, new Path(status.getPath().toString()), TextInputFormat.class, Job1Mapper1.class);
+//	      }
+//	  }
 	  
-	  
+	   FileInputFormat.addInputPath(job1, new Path(args[0] + "*"));
 	  
 	    //set input and output path
 	  //  FileInputFormat.addInputPath((JobConf)job.getConfiguration(), new Path(args[0]));
 	//   MultipleInputs.addInputPath(job1, new Path(args[0]), TextInputFormat.class, Job1Mapper1.class);
-	   MultipleInputs.addInputPath(job1, new Path(args[1]), TextInputFormat.class, Job1Mapper2.class);
+	//   MultipleInputs.addInputPath(job1, new Path(args[1]), TextInputFormat.class, Job1Mapper2.class);
 
 	   /**
 	     * clear out put path
 	     */
 	  
+	  	fs = FileSystem.get(conf1);
 	    /*Check if output path (args[1])exist or not*/
 	    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT1))){
 	       /*If exist delete the output path*/
@@ -102,12 +103,51 @@ public class TaskDriver extends Configured implements Tool{
 
 	 
 	   
-	   /**
-	    * job 2 driver
-	    */
+//	   /**
+//	    * job 2 driver
+//	    */
+//		Configuration conf2 = new Configuration();
+//
+//	 	Job job2 = Job.getInstance(conf2, "JOB2");
+//	    job2.setJarByClass(TaskDriver.class);
+//
+//	    //set mapper
+//	    
+//	    job2.setMapperClass(Job2Mapper1.class);
+//
+//	    //set combiner
+//	  //  job.setCombinerClass(RecordReducer.class);
+//
+//	    //set reducer
+//	    job2.setReducerClass(Job2Reducer.class);
+//
+//	    //set output format
+//	    job2.setOutputKeyClass(Text.class);
+//	    job2.setOutputValueClass(Text.class);
+//
+//	    //set input and output path
+//	    FileInputFormat.addInputPath(job2, new Path(this.INTERMEDIATE_OUTPUT1 + "/part*"));
+//	   
+//	    /**
+//	     * clear out put path
+//	     */
+//	    fs = FileSystem.get(conf2);
+//	    /*Check if output path (args[1])exist or not*/
+//	    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT2))){
+//	       /*If exist delete the output path*/
+//	       fs.delete(new Path(this.INTERMEDIATE_OUTPUT2),true);
+//	    }
+//	    FileOutputFormat.setOutputPath(job2, new Path(this.INTERMEDIATE_OUTPUT2));
+//	    
+	    
+	    
+	    /**
+	     * job 2 dirver
+	     */
+	    
 		Configuration conf2 = new Configuration();
 
-	 	Job job2 = Job.getInstance(conf2, "JOB2");
+	 	Job job2 = Job.getInstance(conf2, "JOB3");
 	    job2.setJarByClass(TaskDriver.class);
 
 	    //set mapper
@@ -116,7 +156,7 @@ public class TaskDriver extends Configured implements Tool{
 
 	    //set combiner
 	  //  job.setCombinerClass(RecordReducer.class);
-
+	//    job3.setNumReduceTasks((int) (1.75 * NUMBER_OF_NODES * REDUCE_TASKS_MAXIMUM));
 	    //set reducer
 	    job2.setReducerClass(Job2Reducer.class);
 
@@ -137,7 +177,7 @@ public class TaskDriver extends Configured implements Tool{
 	       fs.delete(new Path(this.INTERMEDIATE_OUTPUT2),true);
 	    }
 	    FileOutputFormat.setOutputPath(job2, new Path(this.INTERMEDIATE_OUTPUT2));
-	    
+	
 	    
 	    
 	    /**
@@ -146,7 +186,8 @@ public class TaskDriver extends Configured implements Tool{
 	    
 		Configuration conf3 = new Configuration();
 
-	 	Job job3 = Job.getInstance(conf3, "JOB3");
+		conf3.set("job2res", this.INTERMEDIATE_OUTPUT2);
+	 	Job job3 = Job.getInstance(conf3, "JOB4");
 	    job3.setJarByClass(TaskDriver.class);
 
 	    //set mapper
@@ -154,53 +195,14 @@ public class TaskDriver extends Configured implements Tool{
 	    job3.setMapperClass(Job3Mapper1.class);
 
 	    //set combiner
-	  //  job.setCombinerClass(RecordReducer.class);
-
-	    //set reducer
-	    job3.setReducerClass(Job3Reducer.class);
-
-	    //set output format
-	    job3.setOutputKeyClass(Text.class);
-	    job3.setOutputValueClass(Text.class);
-
-	    //set input and output path
-	    FileInputFormat.addInputPath(job3, new Path(this.INTERMEDIATE_OUTPUT2 + "/part*"));
-	   
-	    /**
-	     * clear out put path
-	     */
-	    fs = FileSystem.get(conf3);
-	    /*Check if output path (args[1])exist or not*/
-	    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT3))){
-	       /*If exist delete the output path*/
-	       fs.delete(new Path(this.INTERMEDIATE_OUTPUT3),true);
-	    }
-	    FileOutputFormat.setOutputPath(job3, new Path(this.INTERMEDIATE_OUTPUT3));
-	
-	    
-	    
-	    /**
-	     * job 4 dirver
-	     */
-	    
-		Configuration conf4 = new Configuration();
-
-	 	Job job4 = Job.getInstance(conf4, "JOB4");
-	    job4.setJarByClass(TaskDriver.class);
-
-	    //set mapper
-	    
-	    job4.setMapperClass(Job4Mapper1.class);
-
-	    //set combiner
-	   job4.setCombinerClass(Job4Reducer.class);
+	   job3.setCombinerClass(Job3Reducer.class);
 	  //  job4.setNumReduceTasks(2);
 //	    if(fs.exists(p)){ 
 //	    	fs.delete(p, true); 
 
 //	    	}
 	    
-	   job4.setNumReduceTasks((int) (1.75 * NUMBER_OF_NODES * REDUCE_TASKS_MAXIMUM));
+	   job3.setNumReduceTasks((int) (1.75 * NUMBER_OF_NODES * REDUCE_TASKS_MAXIMUM));
 	    
 //	    job4.setPartitionerClass(NaturalKeyPartitioner.class);
 //	    job4.setGroupingComparatorClass(GroupComprator.class);
@@ -209,12 +211,12 @@ public class TaskDriver extends Configured implements Tool{
 	   
 	    //set reducer
 	    
-	    job4.setReducerClass(Job4Reducer.class);
+	    job3.setReducerClass(Job3Reducer.class);
 	    
 	    
 	    //set output format
-	    job4.setOutputKeyClass(Text.class);
-	    job4.setOutputValueClass(IntWritable.class);
+	    job3.setOutputKeyClass(Text.class);
+	    job3.setOutputValueClass(IntWritable.class);
 	    
 	
 //		  if(status_list != null){
@@ -240,19 +242,19 @@ public class TaskDriver extends Configured implements Tool{
 		 //  MultipleInputs.addInputPath(job1, new Path(args[1]), TextInputFormat.class, Job1Mapper2.class);
 	    //set input and output path
 	
-		  FileInputFormat.addInputPath(job4, new Path(args[0] + "*"));
+		  FileInputFormat.addInputPath(job3, new Path(args[0] + "*"));
 	   
 		  
 		  /**
 		     * clear out put path
 		     */
-		    fs = FileSystem.get(conf4);
+		    fs = FileSystem.get(conf3);
 		    /*Check if output path (args[1])exist or not*/
-		    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT4))){
+		    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT3))){
 		       /*If exist delete the output path*/
-		       fs.delete(new Path(this.INTERMEDIATE_OUTPUT4),true);
+		       fs.delete(new Path(this.INTERMEDIATE_OUTPUT3),true);
 		    }
-	    FileOutputFormat.setOutputPath(job4, new Path(this.INTERMEDIATE_OUTPUT4));
+	    FileOutputFormat.setOutputPath(job3, new Path(this.INTERMEDIATE_OUTPUT3));
 	    
 	    
 	    
@@ -260,48 +262,48 @@ public class TaskDriver extends Configured implements Tool{
 	    
 	    
 	    /**
-	     * job 5 dirver
+	     * job 4 dirver
 	     */
 	    
-		Configuration conf5 = new Configuration();
+		Configuration conf4 = new Configuration();
 
-	 	Job job5 = Job.getInstance(conf5, "JOB5");
-	    job5.setJarByClass(TaskDriver.class);
+	 	Job job4 = Job.getInstance(conf4, "JOB5");
+	    job4.setJarByClass(TaskDriver.class);
 
 	    //set mapper
 	    
 	   
-	    job5.setMapperClass(Job5Mapper1.class);
+	    job4.setMapperClass(Job4Mapper1.class);
 
 	    //set combiner
 	  //  job.setCombinerClass(RecordReducer.class);
 
-//	    job5.setNumReduceTasks((int) (1.75 * NUMBER_OF_NODES * REDUCE_TASKS_MAXIMUM));
+	   // job5.setNumReduceTasks(50);
 	    
 	    //set reducer
-	    job5.setReducerClass(Job5Reducer.class);
+	    job4.setReducerClass(Job4Reducer.class);
 
-//	    job5.setPartitionerClass(NaturalKeyPartitioner.class);
-	    job5.setGroupingComparatorClass(GroupComprator.class);
-	    job5.setSortComparatorClass(SortByPhotoNumber.class);
+	    job4.setPartitionerClass(NaturalKeyPartitioner.class);
+	    job4.setGroupingComparatorClass(GroupComprator.class);
+	    job4.setSortComparatorClass(SortByPhotoNumber.class);
 	    
 	    //set output format
-	    job5.setOutputKeyClass(Text.class);
-	    job5.setOutputValueClass(Text.class);
+	    job4.setOutputKeyClass(Text.class);
+	    job4.setOutputValueClass(Text.class);
 
 	    //set input and output path
-	    FileInputFormat.addInputPath(job5, new Path(this.INTERMEDIATE_OUTPUT4 + "/part*"));
+	    FileInputFormat.addInputPath(job4, new Path(this.INTERMEDIATE_OUTPUT3 + "/part*"));
 	   
 	    /**
 	     * clear out put path
 	     */
-	    fs = FileSystem.get(conf5);
+	    fs = FileSystem.get(conf4);
 	    /*Check if output path (args[1])exist or not*/
 	    if(fs.exists(new Path(args[2]))){
 	       /*If exist delete the output path*/
 	       fs.delete(new Path(args[2]),true);
 	    }
-	    FileOutputFormat.setOutputPath(job5, new Path(args[2]));
+	    FileOutputFormat.setOutputPath(job4, new Path(args[2]));
 	    
 	    
 	    
@@ -314,9 +316,7 @@ public class TaskDriver extends Configured implements Tool{
 	    job1.waitForCompletion(true);
 	    job2.waitForCompletion(true);
 	    job3.waitForCompletion(true);
-	    job4.waitForCompletion(true);
-	    
-	    return job5.waitForCompletion(true)? 0 : 1;
+	    return job4.waitForCompletion(true)? 0 : 1;
 	    
 
 

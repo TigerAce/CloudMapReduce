@@ -24,7 +24,7 @@ public class Job1Mapper1
 			 * 
 			 * 
 			 * TODO: load place txt
-			 
+			 */
 			protected void setup(Mapper<Object, Text, Text, Text>.Context context) throws IOException, InterruptedException {
 				// TODO Auto-generated method stub
 				super.setup(context);
@@ -37,15 +37,39 @@ public class Job1Mapper1
 		            String line;
 		            line=br.readLine();
 		            while (line != null){
+		            	//place-id \t woeid \t latitude \t longitude \t place-name \t place-type-id \t place-url
+		            	
+		            	/**
+		            	 * TODO: note that some neighbor's name under different city may be identical.
+		            	 */
 		                    String[] splitLine = line.split("\t");
-		                    ht.put(splitLine[0], splitLine[6]);
+		                    if(splitLine[5].equals("7"))
+							{
+								//the record is locality level
+								String placeURL = splitLine[6];
+								String[] splitURL = placeURL.split("/");
+								String city = splitURL[splitURL.length - 1];
+								ht.put(splitLine[0], city);
+							//	city_info.put(splitRecord[0],city);
+
+								
+							}else if(splitLine[5].equals("22"))
+							{
+								//the record is neighborhood level
+								String placeURL = splitLine[6];
+								String[] splitURL = placeURL.split("/");
+								String city = splitURL[splitURL.length - 2];
+								ht.put(splitLine[0], city);
+							}
+
+		                   // ht.put(splitLine[0], splitLine[6]);
 		                    line=br.readLine();
 		            }
 		            }catch(Exception e){
 		            }
 			
 			}
-			**/
+		
 			
 			public void map(Object key, Text value, Context context
 			             ) throws IOException, InterruptedException {
@@ -59,9 +83,15 @@ public class Job1Mapper1
 				//get place-id and tags
 				String[] split = value.toString().split("\t");
 				
-				place_id.set(split[4]);
-				count.set("++++");
-				context.write(place_id, count);
+				String placeId = split[4];
+				
+				if(ht.containsKey(placeId)){
+					String city = ht.get(placeId);
+					context.write(new Text(city), new Text("1/" + placeId));
+				}
+//				place_id.set(split[4]);
+//				count.set("++++");
+//				context.write(place_id, count);
 
 			}
 }
