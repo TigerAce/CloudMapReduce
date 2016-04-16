@@ -1,11 +1,11 @@
 package reducers;
 
 import java.io.IOException;
-
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.TreeSet;
 
-
+import org.apache.commons.math3.util.MultidimensionalCounter.Iterator;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -20,34 +20,36 @@ public class Job1Reducer
 		public void reduce(Text key, Iterable<Text> values,
 		                Context context
 		                ) throws IOException, InterruptedException {
-
-		int photoCount = 0;
-		//String temp = null;
-	
-		for (Text val : values) {
-			String value = val.toString();
+			
+			int count = 0;
+			
+			HashSet<String> hs = new HashSet<String>();
+		
+			for(Text t: values){
+				String[] splitVals = t.toString().split("/");
 				
-			if(value.startsWith("----")){
-				city.set(value.substring(4));
-			}else if(value.startsWith("++++")){
-				photoCount++;
+				int c = Integer.parseInt(splitVals[0]);
+				count += c;
+				
+				String[] splitIDs = splitVals[1].split(" ");
+				for(int i = 0; i < splitIDs.length; i++){
+				//	if(!splitIDs[i].equals(""))
+					hs.add(splitIDs[i]);
+				}
+				
+				//placeIds += " " + splitVals[1];
 			}
 
-		}
-	
-	//	if(temp == null) temp = "";
-		
-		//temp = tagCounter(temp);
-
-		
-	//	temp = Integer.toString(photoCount) + "/" + temp;
-		
-		//if(photoCount != 0) System.out.println(temp);
-		if(photoCount!= 0){
-			pc.set(Integer.toString(photoCount) + "/" + key.toString());
-			context.write(city, pc);
-		}
-	
+			String placeIds = "";
+			for(java.util.Iterator<String> iter = hs.iterator(); iter.hasNext();){
+				String n = iter.next();
+				if(placeIds.equals(""))
+				placeIds = n;
+				else
+				placeIds += " " + n;
+			}
+			context.write(key, new Text(Integer.toString(count) + "/" + placeIds));
+		//	System.out.println("job1 red");
 		}
 		
 	

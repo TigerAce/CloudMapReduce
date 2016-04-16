@@ -1,25 +1,20 @@
 package mappers;
 
 import java.io.IOException;
-import java.util.StringTokenizer;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 public class Job2Mapper1
 			extends Mapper<Object, Text, Text, Text>{
 			
-			private Text locality = new Text();
-			private Text info = new Text();
+	
+			private Text k = new Text();
 
-			public void map(Object key, Text value, Context context
-			             ) throws IOException, InterruptedException {
-
-				String[] splitRecord = value.toString().split("\t");
-				locality.set(splitRecord[0]);
-				info.set(splitRecord[1]);
-				
-				context.write(locality, info);
+			public void map(Object key, Text value, Context context) 
+					throws IOException, InterruptedException {		
+//System.out.println("job3 mapper");
+				k.set("k");
+				context.write(k, value);
 			}
 }
