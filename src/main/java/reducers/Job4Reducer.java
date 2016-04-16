@@ -93,7 +93,7 @@ public class Job4Reducer
 				
 			}
 			
-			context.write(new Text(city), new Text(resultValue));
+			context.write(new Text(city.replace("+", " ")), new Text(resultValue));
 //			String k = key.toString();
 //			String[] splitKey = k.split(":");
 //			String country = splitKey[0].replace("+", " ");

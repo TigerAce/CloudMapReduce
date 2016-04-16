@@ -18,7 +18,7 @@ public class Job3Mapper1
 			
 	
 	private Hashtable<String, String> ht = new Hashtable<String,String>();
-		
+	private HashMap hm = new HashMap();	
 			@Override
 	protected void setup(Mapper<Object, Text, Text, IntWritable>.Context context) throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
@@ -49,7 +49,7 @@ public class Job3Mapper1
 				/**
 				 * photo-id \t owner \t tags \t date-taken \t place-id \t accuracy
 				 */
-				
+
 				//get place-id and tags
 				String[] split = value.toString().split("\t");
 				
@@ -61,18 +61,72 @@ public class Job3Mapper1
 		//			System.out.println("contains");
 					String tags = split[2];
 					String city = ht.get(placeId);
+					//System.out.println(city);
+					//System.out.println(ci);
+					//System.out.println(country);
 					String[] splitTags = tags.split(" ");
 					for(int i = 0; i < splitTags.length; i++){
 						String currTag = splitTags[i];
-						if(!currTag.equals(""))
-							/**
-							 * TODO: filter the tags
-							 * 
-							 */
-				//			System.out.println(splitTags[i] + " " + city);
-						context.write(new Text(splitTags[i] + " " + city), new IntWritable(1));
+
+						if(!currTag.equals("") )
+						{
+							if(tagFilter(splitTags[i],city))
+							{
+								context.write(new Text(splitTags[i] + " " + city), new IntWritable(1));	
+							}
+				
+						}
+
 					}
 				}
 			
 			}
+			
+			public static boolean tagFilter(String str,String city)
+			{
+				String split1[] = city.split(",");
+				String ci = split1[0];
+				String province = split1[1];
+				String split2[] = split1[2].split("/");
+				String country = split2[0];
+				
+				if(isNumeric(str))
+				{
+					int year = Integer.parseInt(str);
+					if(year<=2016 && year>=1000)
+					{
+						return false;
+					}else
+					{
+						return true;
+					}
+				}else 
+				{
+					if(str.equalsIgnoreCase(ci)||str.equalsIgnoreCase(country)
+							||str.equalsIgnoreCase(country.replace("+",""))
+							||str.equalsIgnoreCase(ci.replace("+",""))
+							||str.equalsIgnoreCase(province)
+							||str.equalsIgnoreCase(province.replace("+","")))
+					{
+						return false;
+					}else
+					{
+						return true;
+					}
+				}
+				
+			}
+			
+			public static boolean isNumeric(String str)
+			  {
+			    try
+			    {
+			      int i = Integer.parseInt(str);
+			    }
+			    catch(NumberFormatException nfe)
+			    {
+			      return false;
+			    }
+			    return true;
+			  }
 }

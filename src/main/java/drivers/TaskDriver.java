@@ -147,7 +147,8 @@ public class TaskDriver extends Configured implements Tool{
 	    
 		Configuration conf2 = new Configuration();
 
-	 	Job job2 = Job.getInstance(conf2, "JOB3");
+	 	Job job2 = Job.getInstance(conf2, "JOB2");
+
 	    job2.setJarByClass(TaskDriver.class);
 
 	    //set mapper
@@ -187,7 +188,9 @@ public class TaskDriver extends Configured implements Tool{
 		Configuration conf3 = new Configuration();
 
 		conf3.set("job2res", this.INTERMEDIATE_OUTPUT2);
-	 	Job job3 = Job.getInstance(conf3, "JOB4");
+
+	 	Job job3 = Job.getInstance(conf3, "JOB3");
+
 	    job3.setJarByClass(TaskDriver.class);
 
 	    //set mapper
@@ -267,7 +270,8 @@ public class TaskDriver extends Configured implements Tool{
 	    
 		Configuration conf4 = new Configuration();
 
-	 	Job job4 = Job.getInstance(conf4, "JOB5");
+	 	Job job4 = Job.getInstance(conf4, "JOB4");
+
 	    job4.setJarByClass(TaskDriver.class);
 
 	    //set mapper

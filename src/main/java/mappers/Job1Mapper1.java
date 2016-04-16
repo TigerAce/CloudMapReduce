@@ -49,7 +49,11 @@ public class Job1Mapper1
 								String placeURL = splitLine[6];
 								String[] splitURL = placeURL.split("/");
 								String city = splitURL[splitURL.length - 1];
-								ht.put(splitLine[0], city);
+								String country = splitURL[1];
+								//System.out.println(country);
+								String province = splitURL[2];
+								String locality = city + "," +province+","+country;
+								ht.put(splitLine[0], locality);
 							//	city_info.put(splitRecord[0],city);
 
 								
@@ -59,7 +63,10 @@ public class Job1Mapper1
 								String placeURL = splitLine[6];
 								String[] splitURL = placeURL.split("/");
 								String city = splitURL[splitURL.length - 2];
-								ht.put(splitLine[0], city);
+								String country = splitURL[1];
+								String province = splitURL[2];
+								String locality = city + "," +province+","+country;
+								ht.put(splitLine[0], locality);
 							}
 
 		                   // ht.put(splitLine[0], splitLine[6]);
