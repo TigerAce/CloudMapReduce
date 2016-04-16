@@ -65,6 +65,10 @@ public class Job3Mapper1
 					for(int i = 0; i < splitTags.length; i++){
 						String currTag = splitTags[i];
 						if(!currTag.equals(""))
+							/**
+							 * TODO: filter the tags
+							 * 
+							 */
 				//			System.out.println(splitTags[i] + " " + city);
 						context.write(new Text(splitTags[i] + " " + city), new IntWritable(1));
 					}
