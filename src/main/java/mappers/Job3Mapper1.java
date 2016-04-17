@@ -89,19 +89,7 @@ public class Job3Mapper1
 				String province = split1[1];
 				String split2[] = split1[2].split("/");
 				String country = split2[0];
-				
-				if(isNumeric(str))
-				{
-					int year = Integer.parseInt(str);
-					if(year<=2016 && year>=1000)
-					{
-						return false;
-					}else
-					{
-						return true;
-					}
-				}else 
-				{
+
 					if(str.equalsIgnoreCase(ci)||str.equalsIgnoreCase(country)
 							||str.equalsIgnoreCase(country.replace("+",""))
 							||str.equalsIgnoreCase(ci.replace("+",""))
@@ -109,11 +97,16 @@ public class Job3Mapper1
 							||str.equalsIgnoreCase(province.replace("+","")))
 					{
 						return false;
-					}else
-					{
-						return true;
+					}else if(isNumeric(str)){
+					
+						int year = Integer.parseInt(str);
+						if(year<=2016 && year>=1000)
+						{
+							return false;
+						}
 					}
-				}
+					
+					return true;
 				
 			}
 			
@@ -121,7 +114,7 @@ public class Job3Mapper1
 			  {
 			    try
 			    {
-			      int i = Integer.parseInt(str);
+			      Integer.parseInt(str);
 			    }
 			    catch(NumberFormatException nfe)
 			    {

@@ -81,7 +81,7 @@ public class TaskDriver extends Configured implements Tool{
 //	      }
 //	  }
 	  
-	   FileInputFormat.addInputPath(job1, new Path(args[0] + "*"));
+	   FileInputFormat.addInputPath(job1, new Path(args[0] + "/*"));
 	  
 	    //set input and output path
 	  //  FileInputFormat.addInputPath((JobConf)job.getConfiguration(), new Path(args[0]));
