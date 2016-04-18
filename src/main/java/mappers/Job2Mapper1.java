@@ -13,7 +13,6 @@ public class Job2Mapper1
 
 			public void map(Object key, Text value, Context context) 
 					throws IOException, InterruptedException {		
-//System.out.println("job3 mapper");
 				k.set("k");
 				context.write(k, value);
 			}

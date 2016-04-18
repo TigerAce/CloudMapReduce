@@ -1,4 +1,4 @@
-package drivers;
+	package drivers;
 
 
 import org.apache.hadoop.fs.*;
@@ -24,7 +24,7 @@ public class TaskDriver extends Configured implements Tool{
 	private static final String INTERMEDIATE_OUTPUT1 = "./intermediate1";
 	private static final String INTERMEDIATE_OUTPUT2 = "./intermediate2";
 	private static final String INTERMEDIATE_OUTPUT3 = "./intermediate3";
-	private static final String INTERMEDIATE_OUTPUT4 = "./intermediate4";
+
 	
 	private static final int NUMBER_OF_NODES = 14;
 	private static final int REDUCE_TASKS_MAXIMUM = 2;
@@ -70,23 +70,9 @@ public class TaskDriver extends Configured implements Tool{
 	    
 	   FileSystem fs; 
 
-	   //get the FileStatus list from given dir
-//	  FileStatus[] status_list = fs.listStatus(new Path(args[0]));
-//	  if(status_list != null){
-//	      for(FileStatus status : status_list){
-//	          //add each file to the list of inputs for the map-reduce job
-//	    	//  System.out.println(status.getPath());
-//	         // FileInputFormat.addInputPath(conf, status.getPath());
-//	    	  MultipleInputs.addInputPath(job1, new Path(status.getPath().toString()), TextInputFormat.class, Job1Mapper1.class);
-//	      }
-//	  }
 	  
 	   FileInputFormat.addInputPath(job1, new Path(args[0] + "/*"));
 	  
-	    //set input and output path
-	  //  FileInputFormat.addInputPath((JobConf)job.getConfiguration(), new Path(args[0]));
-	//   MultipleInputs.addInputPath(job1, new Path(args[0]), TextInputFormat.class, Job1Mapper1.class);
-	//   MultipleInputs.addInputPath(job1, new Path(args[1]), TextInputFormat.class, Job1Mapper2.class);
 
 	   /**
 	     * clear out put path
@@ -102,43 +88,6 @@ public class TaskDriver extends Configured implements Tool{
 	   FileOutputFormat.setOutputPath(job1, new Path(this.INTERMEDIATE_OUTPUT1));
 
 	 
-	   
-//	   /**
-//	    * job 2 driver
-//	    */
-//		Configuration conf2 = new Configuration();
-//
-//	 	Job job2 = Job.getInstance(conf2, "JOB2");
-//	    job2.setJarByClass(TaskDriver.class);
-//
-//	    //set mapper
-//	    
-//	    job2.setMapperClass(Job2Mapper1.class);
-//
-//	    //set combiner
-//	  //  job.setCombinerClass(RecordReducer.class);
-//
-//	    //set reducer
-//	    job2.setReducerClass(Job2Reducer.class);
-//
-//	    //set output format
-//	    job2.setOutputKeyClass(Text.class);
-//	    job2.setOutputValueClass(Text.class);
-//
-//	    //set input and output path
-//	    FileInputFormat.addInputPath(job2, new Path(this.INTERMEDIATE_OUTPUT1 + "/part*"));
-//	   
-//	    /**
-//	     * clear out put path
-//	     */
-//	    fs = FileSystem.get(conf2);
-//	    /*Check if output path (args[1])exist or not*/
-//	    if(fs.exists(new Path(this.INTERMEDIATE_OUTPUT2))){
-//	       /*If exist delete the output path*/
-//	       fs.delete(new Path(this.INTERMEDIATE_OUTPUT2),true);
-//	    }
-//	    FileOutputFormat.setOutputPath(job2, new Path(this.INTERMEDIATE_OUTPUT2));
-//	    
 	    
 	    
 	    /**
@@ -155,9 +104,7 @@ public class TaskDriver extends Configured implements Tool{
 	    
 	    job2.setMapperClass(Job2Mapper1.class);
 
-	    //set combiner
-	  //  job.setCombinerClass(RecordReducer.class);
-	//    job3.setNumReduceTasks((int) (1.75 * NUMBER_OF_NODES * REDUCE_TASKS_MAXIMUM));
+
 	    //set reducer
 	    job2.setReducerClass(Job2Reducer.class);
 
@@ -199,18 +146,11 @@ public class TaskDriver extends Configured implements Tool{
 
 	    //set combiner
 	   job3.setCombinerClass(Job3Reducer.class);
-	  //  job4.setNumReduceTasks(2);
-//	    if(fs.exists(p)){ 
-//	    	fs.delete(p, true); 
 
-//	    	}
 	    
 	   job3.setNumReduceTasks((int) (1.75 * NUMBER_OF_NODES * REDUCE_TASKS_MAXIMUM));
 	    
-//	    job4.setPartitionerClass(NaturalKeyPartitioner.class);
-//	    job4.setGroupingComparatorClass(GroupComprator.class);
-//	    job4.setSortComparatorClass(KeyComprator.class);
-	    
+
 	   
 	    //set reducer
 	    
@@ -221,29 +161,6 @@ public class TaskDriver extends Configured implements Tool{
 	    job3.setOutputKeyClass(Text.class);
 	    job3.setOutputValueClass(IntWritable.class);
 	    
-	
-//		  if(status_list != null){
-//		      for(FileStatus status : status_list){
-//		          
-//		    	  MultipleInputs.addInputPath(job4, new Path(status.getPath().toString()), TextInputFormat.class, Job4Mapper1.class);
-//		      }
-//		  }
-//		  
-		  
-//		  FileSystem fs4= FileSystem.get(conf4); 
-//		   //get the FileStatus list from given dir
-//		  FileStatus[] status_list4 = fs4.listStatus(new Path(this.INTERMEDIATE_OUTPUT3));
-//		  if(status_list4 != null){
-//		      for(FileStatus status : status_list4){
-//		    	  MultipleInputs.addInputPath(job4, new Path(status.getPath().toString()), TextInputFormat.class, Job4Mapper1.class);
-//		      }
-//		  }
-		  
-		    //set input and output path
-		  //  FileInputFormat.addInputPath((JobConf)job.getConfiguration(), new Path(args[0]));
-	//	   MultipleInputs.addInputPath(job4, new Path(this.INTERMEDIATE_OUTPUT3 + "/part-r-00000"), TextInputFormat.class, Job4Mapper1.class);
-		 //  MultipleInputs.addInputPath(job1, new Path(args[1]), TextInputFormat.class, Job1Mapper2.class);
-	    //set input and output path
 	
 		  FileInputFormat.addInputPath(job3, new Path(args[0] + "*"));
 	   
@@ -331,32 +248,7 @@ public class TaskDriver extends Configured implements Tool{
 	 * this comparator is used for Job 4 to make sure the result from job4mapper1 always show before the result from job4mapper2
 	 * hence to decide whether to process the tags in the reducer.
 	 */
-	public static class KeyComprator extends WritableComparator {
-		 
-		 protected KeyComprator() {
-		 super(Text.class, true);
-		 }
-		 
-		 @Override
-		 public int compare(WritableComparable w1, WritableComparable w2) {
-		 
-	
-		 Text t1 = (Text) w1;
-		 Text t2 = (Text) w2;
-		 String[] t1Items = t1.toString().split(":");
-		 String[] t2Items = t2.toString().split(":");
-	
-		 int comp = t1Items[0].compareTo(t2Items[0]);
-		 
-		//descending value
-		 if (comp == 0) {
-		 comp = -1 * t2Items[1].compareTo(t1Items[1]);
-		 }
-		 
-		 return comp;
-		 
-		 }
-		 }
+
 	
 	/**
 	 * this comparator is used for Job 5 to sort the city by its total number of photos

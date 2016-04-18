@@ -21,10 +21,7 @@ public class Job4Mapper1
 				String secondKey = ks[2];
 				
 				String tag = splitKey[0] + "/" + split[1];
-				
-//				System.out.println(firstKey + ", " + secondKey + "->" + tag);
-//				String[] splitPhtotCountAndTag = split[1].split("/");
-//				k.set(split[0] + ":" + splitPhtotCountAndTag[0]);
+
 				
 				context.write(new Text(firstKey + ":" + secondKey), new Text(tag));
 			}

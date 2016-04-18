@@ -15,9 +15,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 public class Job1Mapper1
 			extends Mapper<Object, Text, Text, Text>{
 			
-			private final static IntWritable one = new IntWritable(1);
-			private Text place_id = new Text();
-			private Text count = new Text();
+	
 			private Hashtable<String, String> ht = new Hashtable<String,String>();
 
 			/**
@@ -50,11 +48,11 @@ public class Job1Mapper1
 								String[] splitURL = placeURL.split("/");
 								String city = splitURL[splitURL.length - 1];
 								String country = splitURL[1];
-								//System.out.println(country);
+						
 								String province = splitURL[2];
 								String locality = city + "," +province+","+country;
 								ht.put(splitLine[0], locality);
-							//	city_info.put(splitRecord[0],city);
+						
 
 								
 							}else if(splitLine[5].equals("22"))
@@ -69,7 +67,7 @@ public class Job1Mapper1
 								ht.put(splitLine[0], locality);
 							}
 
-		                   // ht.put(splitLine[0], splitLine[6]);
+		 
 		                    line=br.readLine();
 		            }
 		            }catch(Exception e){
@@ -96,9 +94,7 @@ public class Job1Mapper1
 					String city = ht.get(placeId);
 					context.write(new Text(city), new Text("1/" + placeId));
 				}
-//				place_id.set(split[4]);
-//				count.set("++++");
-//				context.write(place_id, count);
+
 
 			}
 }
