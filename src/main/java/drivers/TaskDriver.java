@@ -38,7 +38,7 @@ public class TaskDriver extends Configured implements Tool{
 
 	public int run(String[] args) throws Exception {
 
-		System.out.println(args[0] + " -> " + args[1] + " -> " + args[2]);
+		//System.out.println(args[0] + " -> " + args[1] + " -> " + args[2]);
 
 		/**
 		 * Job1 driver
@@ -46,7 +46,7 @@ public class TaskDriver extends Configured implements Tool{
 
 		Configuration conf1 = new Configuration();
 
-		conf1.set("place", args[1]);
+		conf1.set("place", args[args.length - 2]);
 	 	Job job1 = Job.getInstance(conf1, "JOB1");
 	    job1.setJarByClass(TaskDriver.class);
 
@@ -70,8 +70,15 @@ public class TaskDriver extends Configured implements Tool{
 	    
 	   FileSystem fs; 
 
-	  
-	   FileInputFormat.addInputPath(job1, new Path(args[0] + "/*"));
+	   for(int i = 0; i < args.length - 2; i++){
+		   if(args[i].endsWith(".txt")){
+			   FileInputFormat.addInputPath(job1, new Path(args[i]));
+		   }
+		   else{
+			   FileInputFormat.addInputPath(job1, new Path(args[i] + "/*"));
+		   }
+	   }
+	   
 	  
 
 	   /**
@@ -162,7 +169,14 @@ public class TaskDriver extends Configured implements Tool{
 	    job3.setOutputValueClass(IntWritable.class);
 	    
 	
-		  FileInputFormat.addInputPath(job3, new Path(args[0] + "*"));
+	    for(int i = 0; i < args.length - 2; i++){
+			   if(args[i].endsWith(".txt")){
+				   FileInputFormat.addInputPath(job3, new Path(args[i]));
+			   }
+			   else{
+				   FileInputFormat.addInputPath(job3, new Path(args[i] + "/*"));
+			   }
+		   }
 	   
 		  
 		  /**
@@ -220,11 +234,11 @@ public class TaskDriver extends Configured implements Tool{
 	     */
 	    fs = FileSystem.get(conf4);
 	    /*Check if output path (args[1])exist or not*/
-	    if(fs.exists(new Path(args[2]))){
+	    if(fs.exists(new Path(args[args.length - 1]))){
 	       /*If exist delete the output path*/
-	       fs.delete(new Path(args[2]),true);
+	       fs.delete(new Path(args[args.length - 1]),true);
 	    }
-	    FileOutputFormat.setOutputPath(job4, new Path(args[2]));
+	    FileOutputFormat.setOutputPath(job4, new Path(args[args.length - 1]));
 	    
 	    
 	    
